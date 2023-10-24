@@ -1,9 +1,15 @@
 publish:
-		npm publish --dry-run
+				npm publish --dry-run
 
 lint:
-		npx eslint
+				npx eslint
 
 install:
-		npm ci
+				npm ci
+
+develop:
+				npx webpack serve
+
+build:
+				NODE_ENV=production npx webpack
 	

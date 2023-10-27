@@ -3,10 +3,6 @@ import _ from 'lodash';
 import onChange from 'on-change';
 import render from './view.js';
 
-const arr = {
-  errors: null,
-};
-
 const validate = async (url, addedUrls) => {
   const schema = yup.object().shape({
     url: yup.string()

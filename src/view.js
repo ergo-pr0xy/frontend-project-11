@@ -23,6 +23,8 @@ const renderErrors = (elements, state, errors, prevErrors) => {
     if (!fieldHadError && !fieldHasError) {
       fieldElement.classList.remove('is-invalid');
       renderFeedback(elements, error);
+      elements.form.reset();
+      elements.fields.url.focus();
       return;
     }
 

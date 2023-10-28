@@ -1,13 +1,21 @@
 import * as yup from 'yup';
 import _ from 'lodash';
 import onChange from 'on-change';
+import i18n from 'i18next';
 import render from './view.js';
+import ru from './locales/ru.js';
 
 const validate = async (url, addedUrls) => {
+  // yup.setLocale({
+  //   string: {
+
+  //   }
+  // })
+
   const schema = yup.object().shape({
     url: yup.string()
-      .url('Ссылка должна быть валидным URL')
-      .notOneOf(addedUrls, 'RSS уже существует'),
+      .url()
+      .notOneOf(addedUrls),
   });
   return schema.validate(url, { abortEarly: false })
     .then(() => ({}))
@@ -15,6 +23,15 @@ const validate = async (url, addedUrls) => {
 };
 
 const app = async () => {
+  const i18nInstance = i18n.createInstance();
+  i18nInstance.init({
+    lng: 'ru',
+    debug: false,
+    resources: {
+      ru,
+    },
+  });
+
   const elements = {
     form: document.querySelector('.rss-form'),
     submitButton: document.querySelector('button[type="submit"]'),
@@ -28,6 +45,7 @@ const app = async () => {
     process: null,
     addedUrls: [],
     form: {
+      status: null,
       fields: {
         url: null,
       },
@@ -35,7 +53,7 @@ const app = async () => {
     },
   };
 
-  const watchedState = onChange(state, render(elements, state));
+  const watchedState = onChange(state, render(elements, state, i18nInstance));
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -44,13 +62,13 @@ const app = async () => {
     watchedState.form.fields.url = formData.get('url');
     validate(watchedState.form.fields, watchedState.addedUrls)
       .then((errors) => {
-        watchedState.form.errors = errors;
-        if (_.isEmpty(watchedState.form.errors)) {
+        if (_.isEmpty(errors)) {
           watchedState.addedUrls.push(watchedState.form.fields.url);
-          watchedState.process = 'added';
+          watchedState.form.status = 'correct';
         } else {
-          watchedState.process = 'error';
+          watchedState.form.status = 'error';
         }
+        watchedState.form.errors = errors;
       });
   });
 };

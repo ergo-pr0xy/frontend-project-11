@@ -5,24 +5,26 @@ import i18n from 'i18next';
 import render from './view.js';
 import ru from './locales/ru.js';
 
-const validate = async (url, addedUrls) => {
-  // yup.setLocale({
-  //   string: {
-
-  //   }
-  // })
+const validate = (url, addedUrls) => {
+  yup.setLocale({
+    mixed: {
+      required: 'urlRequired',
+      notOneOf: 'existedUrl',
+    },
+    string: {
+      url: 'invalidUrl',
+    },
+  });
 
   const schema = yup.object().shape({
-    url: yup.string()
-      .url()
-      .notOneOf(addedUrls),
+    url: yup.string().url().notOneOf(addedUrls),
   });
-  return schema.validate(url, { abortEarly: false })
-    .then(() => ({}))
-    .catch((e) => _.keyBy(e.inner, 'path'));
+  return schema.validate(url)
+    .then(() => {})
+    .catch((e) => e);
 };
 
-const app = async () => {
+const app = () => {
   const i18nInstance = i18n.createInstance();
   i18nInstance.init({
     lng: 'ru',
@@ -50,6 +52,7 @@ const app = async () => {
         url: null,
       },
       errors: {},
+      messageKey: null,
     },
   };
 
@@ -61,14 +64,16 @@ const app = async () => {
     watchedState.process = 'adding';
     watchedState.form.fields.url = formData.get('url');
     validate(watchedState.form.fields, watchedState.addedUrls)
-      .then((errors) => {
-        if (_.isEmpty(errors)) {
+      .then((result) => {
+        if (_.isEmpty(result)) {
           watchedState.addedUrls.push(watchedState.form.fields.url);
-          watchedState.form.status = 'correct';
+          watchedState.form.errors = {};
+          watchedState.form.hasErrors = false;
         } else {
-          watchedState.form.status = 'error';
+          watchedState.form.errors[result.path] = result;
+          watchedState.form.messageKey = result.message;
+          watchedState.form.hasErrors = true;
         }
-        watchedState.form.errors = errors;
       });
   });
 };

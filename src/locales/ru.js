@@ -2,8 +2,8 @@ export default {
   translation: {
     messageTexts: {
       correctUrl: 'RSS успешно загружен',
-      notValidUrlErr: 'Ссылка должна быть валидным URL',
-      existErr: 'RSS уже существует',
+      invalidUrl: 'Ссылка должна быть валидным URL',
+      existedUrl: 'RSS уже существует',
     },
   },
 };

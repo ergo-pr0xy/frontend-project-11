@@ -46,6 +46,8 @@ const app = () => {
     fields: {
       url: document.querySelector('#url-input'),
     },
+    feeds: document.querySelector('.feeds'),
+    posts: document.querySelector('.posts'),
   };
 
   const state = {
@@ -73,6 +75,8 @@ const app = () => {
     const addedUrls = state.feeds.map((feed) => feed.url);
     validate(watchedState.form.fields, addedUrls)
       .then(() => {
+        watchedState.form.errors = {};
+        watchedState.form.hasErrors = false;
         const response = axios.get(normalizeLink(currentURL));
         return response;
       })
@@ -85,15 +89,14 @@ const app = () => {
           description: parsedRss.flowDescription,
         };
         const posts = parsedRss.posts.map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
-        watchedState.form.errors = {};
         watchedState.feeds.push(feed);
         watchedState.posts.push(...posts);
-        watchedState.form.hasErrors = false;
       })
       .catch((error) => {
         watchedState.form.errors[error.path] = error;
         watchedState.form.messageKey = error.message;
         watchedState.form.hasErrors = true;
+        console.log(error);
       });
   });
 };

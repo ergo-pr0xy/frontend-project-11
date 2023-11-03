@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+// const renderFeeds = (elements, state,)
+
 const renderFeedback = (elements, state, i18n) => {
   const { feedbackElement } = elements;
 
@@ -9,7 +11,6 @@ const renderFeedback = (elements, state, i18n) => {
     feedbackElement.classList.remove('text-danger');
     return;
   }
-  // console.log(state.form.messageKey);
   feedbackElement.classList.add('text-danger');
   feedbackElement.classList.remove('text-success');
   const messagePath = `messageTexts.${state.form.messageKey}`;

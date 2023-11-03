@@ -1,9 +1,16 @@
 import * as yup from 'yup';
-import _ from 'lodash';
+import { uniqueId } from 'lodash';
 import onChange from 'on-change';
 import i18n from 'i18next';
+import axios from 'axios';
 import render from './view.js';
 import ru from './locales/ru.js';
+import parseRss from './parser.js';
+
+const normalizeLink = (link) => {
+  const proxyLink = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
+  return `${proxyLink}${link}`;
+};
 
 const validate = (url, addedUrls) => {
   yup.setLocale({
@@ -19,9 +26,7 @@ const validate = (url, addedUrls) => {
   const schema = yup.object().shape({
     url: yup.string().url().notOneOf(addedUrls),
   });
-  return schema.validate(url)
-    .then(() => {})
-    .catch((e) => e);
+  return schema.validate(url);
 };
 
 const app = () => {
@@ -45,13 +50,15 @@ const app = () => {
 
   const state = {
     process: null,
-    addedUrls: [],
+    feeds: [],
+    posts: [],
     form: {
       status: null,
       fields: {
         url: null,
       },
       errors: {},
+      hasErrors: null,
       messageKey: null,
     },
   };
@@ -61,19 +68,32 @@ const app = () => {
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    watchedState.process = 'adding';
-    watchedState.form.fields.url = formData.get('url');
-    validate(watchedState.form.fields, watchedState.addedUrls)
-      .then((result) => {
-        if (_.isEmpty(result)) {
-          watchedState.addedUrls.push(watchedState.form.fields.url);
-          watchedState.form.errors = {};
-          watchedState.form.hasErrors = false;
-        } else {
-          watchedState.form.errors[result.path] = result;
-          watchedState.form.messageKey = result.message;
-          watchedState.form.hasErrors = true;
-        }
+    const currentURL = formData.get('url');
+    watchedState.form.fields.url = currentURL;
+    const addedUrls = state.feeds.map((feed) => feed.url);
+    validate(watchedState.form.fields, addedUrls)
+      .then(() => {
+        const response = axios.get(normalizeLink(currentURL));
+        return response;
+      })
+      .then((content) => parseRss(content.data.contents))
+      .then((parsedRss) => {
+        const feed = {
+          id: uniqueId(),
+          url: currentURL,
+          title: parsedRss.flowTitle,
+          description: parsedRss.flowDescription,
+        };
+        const posts = parsedRss.posts.map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
+        watchedState.form.errors = {};
+        watchedState.feeds.push(feed);
+        watchedState.posts.push(...posts);
+        watchedState.form.hasErrors = false;
+      })
+      .catch((error) => {
+        watchedState.form.errors[error.path] = error;
+        watchedState.form.messageKey = error.message;
+        watchedState.form.hasErrors = true;
       });
   });
 };

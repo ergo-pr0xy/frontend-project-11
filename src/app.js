@@ -7,6 +7,8 @@ import render from './view.js';
 import ru from './locales/ru.js';
 import parseRss from './parser.js';
 
+// https://lorem-rss.hexlet.app/feed?unit=second&interval=5
+
 const normalizeLink = (link) => {
   const proxyLink = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
   return `${proxyLink}${link}`;
@@ -27,12 +29,14 @@ const updateNewPosts = (state) => {
       return updatedPosts;
     });
 
-  const newPosts = Promise.all(promises);
-  newPosts.then((posts) => {
+  const promise = Promise.all(promises);
+  promise.then((posts) => {
     const updatedPosts = posts.flat();
-    watchedState.posts = updatedPosts;
+    const addedLinks = watchedState.posts.map((addedPost) => addedPost.link);
+    const newPosts = updatedPosts.filter((updatedPost) => !addedLinks.includes(updatedPost.link));
+    watchedState.posts.unshift(...newPosts);
   });
-  setTimeout(() => updateNewPosts(watchedState), 3000);
+  setTimeout(() => updateNewPosts(watchedState), 5000);
 };
 
 const validate = (url, addedUrls) => {

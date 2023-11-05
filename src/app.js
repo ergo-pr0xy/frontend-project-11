@@ -12,6 +12,29 @@ const normalizeLink = (link) => {
   return `${proxyLink}${link}`;
 };
 
+const updateNewPosts = (state) => {
+  const watchedState = state;
+
+  const promises = watchedState.feeds
+    .map((feed) => {
+      const updatedPosts = axios.get(normalizeLink(feed.url))
+        .then((content) => parseRss(content.data.contents))
+        .then((parsedRss) => {
+          const posts = parsedRss.posts
+            .map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
+          return posts;
+        });
+      return updatedPosts;
+    });
+
+  const newPosts = Promise.all(promises);
+  newPosts.then((posts) => {
+    const updatedPosts = posts.flat();
+    watchedState.posts = updatedPosts;
+  });
+  setTimeout(() => updateNewPosts(watchedState), 3000);
+};
+
 const validate = (url, addedUrls) => {
   yup.setLocale({
     mixed: {
@@ -51,11 +74,9 @@ const app = () => {
   };
 
   const state = {
-    process: null,
     feeds: [],
     posts: [],
     form: {
-      status: null,
       fields: {
         url: null,
       },
@@ -99,6 +120,8 @@ const app = () => {
         console.log(error);
       });
   });
+
+  updateNewPosts(watchedState);
 };
 
 export default app;

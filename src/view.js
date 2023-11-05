@@ -1,20 +1,12 @@
-// const makeDivSample = (cardName, i18n) => {
-//   const card = document.createElement('div');
-//   card.classList.add('card', 'border-0');
-
-//   const cardBody = document.createElement('div');
-//   cardBody.classList.add('card-body');
-
-//   const cardTitle = document.createElement('h2');
-//   cardTitle.classList.add('card-title', 'h4');
-//   cardTitle.textContent = i18n.t(cardName);
-//   cardBody.append(cardTitle);
-// }
+import { has } from 'lodash';
 
 const renderPosts = (elements, state, i18n) => {
+  if (state.posts.length === 0) {
+    return;
+  }
+
   const { posts: postElements } = elements;
   postElements.innerHTML = '';
-
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
 
@@ -118,8 +110,8 @@ const renderFeedback = (elements, state, i18n) => {
 
 const renderErrors = (elements, state, errors, prevErrors, i18n) => {
   Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
-    const fieldHasError = _.has(errors, fieldName);
-    const fieldHadError = _.has(prevErrors, fieldName);
+    const fieldHasError = has(errors, fieldName);
+    const fieldHadError = has(prevErrors, fieldName);
 
     if (!fieldHadError && !fieldHasError) {
       fieldElement.classList.remove('is-invalid');

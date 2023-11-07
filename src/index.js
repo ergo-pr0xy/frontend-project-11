@@ -1,6 +1,6 @@
 import 'bootstrap';
-import './styles.scss';
-import './styles.css';
+import './styles/styles.scss';
+import './styles/styles.css';
 import app from './app.js';
 
 app();

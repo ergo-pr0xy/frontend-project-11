@@ -15,8 +15,94 @@ const renderReadedPost = (clickedLink) => {
   readedLink.classList.add('fw-normal', 'link-secondary');
 };
 
-const makeCardSample = () => {
-  
+const makePostElement = () => {
+  const postEl = document.createElement('li');
+  postEl.classList.add(
+    'list-group-item',
+    'd-flex',
+    'justify-content-between',
+    'align-items-start',
+    'border-0',
+    'border-end-0',
+  );
+  return postEl;
+};
+
+const makeLinkElement = (state, post) => {
+  const linkEl = document.createElement('a');
+  linkEl.setAttribute('href', post.link);
+  linkEl.setAttribute('data-id', post.id);
+  linkEl.setAttribute('target', '_blank');
+  linkEl.setAttribute('rel', 'noopener noreferrer');
+  linkEl.textContent = post.title;
+
+  if (isPostReaded(state, linkEl.dataset.id)) {
+    linkEl.classList.add('fw-normal', 'link-secondary');
+  } else {
+    linkEl.classList.add('fw-bold');
+  }
+
+  linkEl.addEventListener('click', (event) => {
+    if (isPostReaded(state, linkEl.dataset.id)) {
+      return;
+    }
+    state.readedPostsIds.push(linkEl.dataset.id);
+    renderReadedPost(event.target);
+  });
+
+  return linkEl;
+};
+
+const makeButtonElement = (elements, state, i18nInstance, post) => {
+  const buttonEl = document.createElement('button');
+  buttonEl.setAttribute('type', 'button');
+  buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+  buttonEl.setAttribute('data-id', post.id);
+  buttonEl.setAttribute('data-bs-toggle', 'modal');
+  buttonEl.setAttribute('data-bs-target', '#modal');
+  buttonEl.textContent = i18nInstance.t('buttons.view');
+
+  buttonEl.addEventListener('click', () => {
+    renderModalElement(elements, post);
+    if (isPostReaded(state, buttonEl.dataset.id)) {
+      return;
+    }
+    state.readedPostsIds.push(buttonEl.dataset.id);
+    const clickedLink = document.querySelector(`a[data-id="${buttonEl.dataset.id}"`);
+    renderReadedPost(clickedLink);
+  });
+
+  return buttonEl;
+};
+
+const makeFeedElement = (feed) => {
+  const feedEl = document.createElement('li');
+  feedEl.classList.add('list-group-item', 'border-0', 'border-end-0');
+  const feedTitle = document.createElement('h3');
+  feedTitle.classList.add('h6', 'm-0');
+  feedTitle.textContent = feed.title;
+  const feedDescription = document.createElement('p');
+  feedDescription.classList.add('m-0', 'small', 'text-black-50');
+  feedDescription.textContent = feed.description;
+  feedEl.append(feedTitle, feedDescription);
+  return feedEl;
+};
+
+const makeCardSample = (i18nInstance) => {
+  const card = document.createElement('div');
+  card.classList.add('card', 'border-0');
+
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+
+  const cardTitle = document.createElement('h2');
+  cardTitle.classList.add('card-title', 'h4');
+  cardTitle.textContent = i18nInstance.t('posts');
+
+  cardBody.append(cardTitle);
+  card.append(cardBody);
+
+  return card;
 };
 
 const renderPosts = (elements, state, i18n) => {
@@ -26,76 +112,21 @@ const renderPosts = (elements, state, i18n) => {
 
   const { posts: postElements } = elements;
   postElements.innerHTML = '';
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-
-  const cardTitle = document.createElement('h2');
-  cardTitle.classList.add('card-title', 'h4');
-  cardTitle.textContent = i18n.t('posts');
-  cardBody.append(cardTitle);
-
   const postsList = document.createElement('ul');
   postsList.classList.add('list-group', 'border-0', 'rounded-0');
 
   const posts = state.posts
     .map((post) => {
-      const postEl = document.createElement('li');
-      postEl.classList.add(
-        'list-group-item',
-        'd-flex',
-        'justify-content-between',
-        'align-items-start',
-        'border-0',
-        'border-end-0',
-      );
-
-      const link = document.createElement('a');
-      link.setAttribute('href', post.link);
-      link.setAttribute('data-id', post.id);
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
-      link.textContent = post.title;
-
-      if (isPostReaded(state, link.dataset.id)) {
-        link.classList.add('fw-normal', 'link-secondary');
-      } else {
-        link.classList.add('fw-bold');
-      }
-
-      link.addEventListener('click', (event) => {
-        if (isPostReaded(state, link.dataset.id)) {
-          return;
-        }
-        state.readedPostsIds.push(link.dataset.id);
-        renderReadedPost(event.target);
-      });
-
-      const button = document.createElement('button');
-      button.setAttribute('type', 'button');
-      button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-      button.setAttribute('data-id', post.id);
-      button.setAttribute('data-bs-toggle', 'modal');
-      button.setAttribute('data-bs-target', '#modal');
-      button.textContent = i18n.t('buttons.view');
-
-      button.addEventListener('click', () => {
-        renderModalElement(elements, post);
-        if (isPostReaded(state, button.dataset.id)) {
-          return;
-        }
-        state.readedPostsIds.push(button.dataset.id);
-        const clickedLink = document.querySelector(`a[data-id="${button.dataset.id}"`);
-        renderReadedPost(clickedLink);
-      });
-
+      const postEl = makePostElement();
+      const link = makeLinkElement(state, post);
+      const button = makeButtonElement(elements, state, i18n, post);
       postEl.append(link, button);
       return postEl;
     });
+
   postsList.append(...posts);
-  card.append(cardBody, postsList);
+  const card = makeCardSample(i18n);
+  card.append(postsList);
   postElements.append(card);
 };
 
@@ -103,34 +134,17 @@ const renderFeeds = (elements, state, i18n) => {
   const { feeds: feedElements } = elements;
   feedElements.innerHTML = '';
 
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-
-  const cardTitle = document.createElement('h2');
-  cardTitle.classList.add('card-title', 'h4');
-  cardTitle.textContent = i18n.t('feeds');
-  cardBody.append(cardTitle);
-
   const feedsList = document.createElement('ul');
   feedsList.classList.add('list-group', 'border-0', 'rounded-0');
 
   const feeds = state.feeds.map((feed) => {
-    const feedEl = document.createElement('li');
-    feedEl.classList.add('list-group-item', 'border-0', 'border-end-0');
-    const feedTitle = document.createElement('h3');
-    feedTitle.classList.add('h6', 'm-0');
-    feedTitle.textContent = feed.title;
-    const feedDescription = document.createElement('p');
-    feedDescription.classList.add('m-0', 'small', 'text-black-50');
-    feedDescription.textContent = feed.description;
-    feedEl.append(feedTitle, feedDescription);
+    const feedEl = makeFeedElement(feed);
     return feedEl;
   });
+
   feedsList.append(...feeds);
-  card.append(cardBody, feedsList);
+  const card = makeCardSample(i18n);
+  card.append(feedsList);
   feedElements.append(card);
 };
 

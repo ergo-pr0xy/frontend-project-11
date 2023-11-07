@@ -8,7 +8,7 @@ import ru from './locales/ru.js';
 import parseRss from './parser.js';
 
 // https://lorem-rss.hexlet.app/feed?unit=second&interval=5
-const milisecondsValue = 500000;
+const milisecondsValue = 5000;
 
 const normalizeLink = (link) => {
   const proxyLink = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
@@ -119,8 +119,8 @@ const app = () => {
           description: parsedRss.flowDescription,
         };
         const posts = parsedRss.posts.map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
-        watchedState.feeds.push(feed);
-        watchedState.posts.push(...posts);
+        watchedState.feeds.unshift(feed);
+        watchedState.posts.unshift(...posts);
       })
       .catch((error) => {
         watchedState.form.errors[error.path] = error;

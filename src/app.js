@@ -123,8 +123,14 @@ const app = () => {
         watchedState.posts.unshift(...posts);
       })
       .catch((error) => {
-        watchedState.form.errors[error.path] = error;
-        watchedState.form.messageKey = error.message;
+        if (error.name === 'ValidationError') {
+          watchedState.form.messageKey = error.message;
+        }
+
+        if (error.name === 'AxiosError') {
+          watchedState.form.messageKey = error.name;
+        }
+
         watchedState.form.hasErrors = true;
         console.log(error);
       });

@@ -7,7 +7,6 @@ import render from './view.js';
 import ru from './locales/ru.js';
 import parseRss from './parser.js';
 
-// https://lorem-rss.hexlet.app/feed?unit=second&interval=5
 const milisecondsValue = 5000;
 
 const normalizeLink = (link) => {

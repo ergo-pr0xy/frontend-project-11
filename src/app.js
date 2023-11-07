@@ -8,6 +8,7 @@ import ru from './locales/ru.js';
 import parseRss from './parser.js';
 
 // https://lorem-rss.hexlet.app/feed?unit=second&interval=5
+const milisecondsValue = 500000;
 
 const normalizeLink = (link) => {
   const proxyLink = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
@@ -36,7 +37,7 @@ const updateNewPosts = (state) => {
     const newPosts = updatedPosts.filter((updatedPost) => !addedLinks.includes(updatedPost.link));
     watchedState.posts.unshift(...newPosts);
   });
-  setTimeout(() => updateNewPosts(watchedState), 5000);
+  setTimeout(() => updateNewPosts(watchedState), milisecondsValue);
 };
 
 const validate = (url, addedUrls) => {
@@ -75,11 +76,15 @@ const app = () => {
     },
     feeds: document.querySelector('.feeds'),
     posts: document.querySelector('.posts'),
+    modalTitle: document.querySelector('.modal-title'),
+    modalBody: document.querySelector('.modal-body'),
+    readFullButton: document.querySelector('.full-article'),
   };
 
   const state = {
     feeds: [],
     posts: [],
+    readedPostsIds: [],
     form: {
       fields: {
         url: null,
@@ -97,7 +102,7 @@ const app = () => {
     const formData = new FormData(e.target);
     const currentURL = formData.get('url');
     watchedState.form.fields.url = currentURL;
-    const addedUrls = state.feeds.map((feed) => feed.url);
+    const addedUrls = watchedState.feeds.map((feed) => feed.url);
     validate(watchedState.form.fields, addedUrls)
       .then(() => {
         watchedState.form.errors = {};

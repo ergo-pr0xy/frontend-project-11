@@ -1,5 +1,24 @@
 import { has } from 'lodash';
 
+const isPostReaded = (state, postId) => state.readedPostsIds.includes(postId);
+
+const renderModalElement = (elements, post) => {
+  const { modalTitle, modalBody, readFullButton } = elements;
+  modalTitle.textContent = post.title;
+  modalBody.textContent = post.description;
+  readFullButton.setAttribute('href', post.link);
+};
+
+const renderReadedPost = (clickedLink) => {
+  const readedLink = clickedLink;
+  readedLink.classList.remove('fw-bold');
+  readedLink.classList.add('fw-normal', 'link-secondary');
+};
+
+const makeCardSample = () => {
+  
+};
+
 const renderPosts = (elements, state, i18n) => {
   if (state.posts.length === 0) {
     return;
@@ -35,12 +54,24 @@ const renderPosts = (elements, state, i18n) => {
 
       const link = document.createElement('a');
       link.setAttribute('href', post.link);
-      link.setAttribute('class', 'fw-bold');
       link.setAttribute('data-id', post.id);
       link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener');
-      link.setAttribute('rel', 'noreferrer');
+      link.setAttribute('rel', 'noopener noreferrer');
       link.textContent = post.title;
+
+      if (isPostReaded(state, link.dataset.id)) {
+        link.classList.add('fw-normal', 'link-secondary');
+      } else {
+        link.classList.add('fw-bold');
+      }
+
+      link.addEventListener('click', (event) => {
+        if (isPostReaded(state, link.dataset.id)) {
+          return;
+        }
+        state.readedPostsIds.push(link.dataset.id);
+        renderReadedPost(event.target);
+      });
 
       const button = document.createElement('button');
       button.setAttribute('type', 'button');
@@ -49,6 +80,16 @@ const renderPosts = (elements, state, i18n) => {
       button.setAttribute('data-bs-toggle', 'modal');
       button.setAttribute('data-bs-target', '#modal');
       button.textContent = i18n.t('buttons.view');
+
+      button.addEventListener('click', () => {
+        renderModalElement(elements, post);
+        if (isPostReaded(state, button.dataset.id)) {
+          return;
+        }
+        state.readedPostsIds.push(button.dataset.id);
+        const clickedLink = document.querySelector(`a[data-id="${button.dataset.id}"`);
+        renderReadedPost(clickedLink);
+      });
 
       postEl.append(link, button);
       return postEl;

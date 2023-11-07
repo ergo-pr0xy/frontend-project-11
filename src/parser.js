@@ -1,9 +1,12 @@
-export default (string) => {
+export default (string, state) => {
+  const watchedState = state;
   const parser = new DOMParser();
   const doc = parser.parseFromString(string, 'application/xml');
   const error = doc.querySelector('parsererror');
   if (error) {
-    throw new Error(error.textContent);
+    watchedState.form.messageKey = 'parserError';
+    watchedState.form.hasErrors = true;
+    console.log(error);
   }
   const flowTitle = doc.querySelector('channel title').textContent;
   const flowDescription = doc.querySelector('channel description').textContent;

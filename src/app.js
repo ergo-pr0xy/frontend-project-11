@@ -105,11 +105,10 @@ const app = () => {
     validate(watchedState.form.fields, addedUrls)
       .then(() => {
         watchedState.form.errors = {};
-        watchedState.form.hasErrors = false;
         const response = axios.get(normalizeLink(currentURL));
         return response;
       })
-      .then((content) => parseRss(content.data.contents))
+      .then((content) => parseRss(content.data.contents, watchedState))
       .then((parsedRss) => {
         const feed = {
           id: uniqueId(),
@@ -118,6 +117,7 @@ const app = () => {
           description: parsedRss.flowDescription,
         };
         const posts = parsedRss.posts.map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
+        watchedState.form.hasErrors = false;
         watchedState.feeds.unshift(feed);
         watchedState.posts.unshift(...posts);
       })
@@ -127,7 +127,7 @@ const app = () => {
         }
 
         if (error.name === 'AxiosError') {
-          watchedState.form.messageKey = error.name;
+          watchedState.form.messageKey = 'networkError';
         }
 
         watchedState.form.hasErrors = true;

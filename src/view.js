@@ -1,6 +1,6 @@
 import { has } from 'lodash';
 
-const isPostReaded = (state, postId) => state.readedPostsIds.includes(postId);
+const isPostShowed = (state, postId) => state.showedPostsIds.includes(postId);
 
 const renderModalElement = (elements, post) => {
   const { modalTitle, modalBody, readFullButton } = elements;
@@ -9,10 +9,10 @@ const renderModalElement = (elements, post) => {
   readFullButton.setAttribute('href', post.link);
 };
 
-const renderReadedPost = (clickedLink) => {
-  const readedLink = clickedLink;
-  readedLink.classList.remove('fw-bold');
-  readedLink.classList.add('fw-normal', 'link-secondary');
+const renderShowedPost = (clickedLink) => {
+  const showedLink = clickedLink;
+  showedLink.classList.remove('fw-bold');
+  showedLink.classList.add('fw-normal', 'link-secondary');
 };
 
 const makePostElement = () => {
@@ -36,18 +36,18 @@ const makeLinkElement = (state, post) => {
   linkEl.setAttribute('rel', 'noopener noreferrer');
   linkEl.textContent = post.title;
 
-  if (isPostReaded(state, linkEl.dataset.id)) {
+  if (isPostShowed(state, linkEl.dataset.id)) {
     linkEl.classList.add('fw-normal', 'link-secondary');
   } else {
     linkEl.classList.add('fw-bold');
   }
 
   linkEl.addEventListener('click', (event) => {
-    if (isPostReaded(state, linkEl.dataset.id)) {
+    if (isPostShowed(state, linkEl.dataset.id)) {
       return;
     }
-    state.readedPostsIds.push(linkEl.dataset.id);
-    renderReadedPost(event.target);
+    state.showedPostsIds.push(linkEl.dataset.id);
+    renderShowedPost(event.target);
   });
 
   return linkEl;
@@ -64,12 +64,12 @@ const makeButtonElement = (elements, state, i18nInstance, post) => {
 
   buttonEl.addEventListener('click', () => {
     renderModalElement(elements, post);
-    if (isPostReaded(state, buttonEl.dataset.id)) {
+    if (isPostShowed(state, buttonEl.dataset.id)) {
       return;
     }
-    state.readedPostsIds.push(buttonEl.dataset.id);
+    state.showedPostsIds.push(buttonEl.dataset.id);
     const clickedLink = document.querySelector(`a[data-id="${buttonEl.dataset.id}"`);
-    renderReadedPost(clickedLink);
+    renderShowedPost(clickedLink);
   });
 
   return buttonEl;

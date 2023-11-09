@@ -83,7 +83,7 @@ const app = () => {
   const state = {
     feeds: [],
     posts: [],
-    readedPostsIds: [],
+    showedPostsIds: [],
     form: {
       fields: {
         url: null,

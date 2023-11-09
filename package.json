@@ -2,12 +2,12 @@
   "name": "@hexlet/code",
   "type": "module",
   "version": "1.0.0",
-  "description": "[![Actions Status](https://github.com/ergo-pr0xy/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/ergo-pr0xy/frontend-project-11/actions)",
+  "description": "Rss-reader application aimed to add RSS feed and automatically update it and add new posts",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Nikita Kuznetsov",
   "license": "ISC",
   "devDependencies": {
     "css-loader": "^6.8.1",

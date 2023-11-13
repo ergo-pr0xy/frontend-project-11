@@ -1,9 +1,8 @@
 import * as yup from 'yup';
 import { uniqueId } from 'lodash';
-import onChange from 'on-change';
 import i18n from 'i18next';
 import axios from 'axios';
-import render from './view.js';
+import watch from './view.js';
 import ru from './locales/ru.js';
 import parseRss from './parser.js';
 
@@ -94,7 +93,7 @@ const app = () => {
     },
   };
 
-  const watchedState = onChange(state, render(elements, state, i18nInstance));
+  const watchedState = watch(elements, state, i18nInstance);
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();

@@ -1,4 +1,5 @@
 import { has } from 'lodash';
+import onChange from 'on-change';
 
 const isPostShowed = (state, postId) => state.showedPostsIds.includes(postId);
 
@@ -205,4 +206,9 @@ const render = (elements, state, i18n) => (path, value, prevValue) => {
   }
 };
 
-export default render;
+const watch = (elements, initState, i18nInstance) => {
+  const watchedState = onChange(initState, render(elements, initState, i18nInstance));
+  return watchedState;
+};
+
+export default watch;

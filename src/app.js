@@ -39,20 +39,17 @@ const addButtonListener = (buttonEl, state) => {
   });
 };
 
-const updateNewPosts = (state) => {
-  const watchedState = state;
-
-  const promises = watchedState.feeds
-    .map((feed) => {
-      const updatedPosts = axios.get(normalizeLink(feed.url))
-        .then((content) => parseRss(content.data.contents))
-        .then((parsedRss) => {
-          const posts = parsedRss.posts
-            .map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
-          return posts;
-        });
-      return updatedPosts;
-    });
+const updateNewPosts = (watchedState) => {
+  const promises = watchedState.feeds.map((feed) => {
+    const updatedPosts = axios.get(normalizeLink(feed.url))
+      .then((content) => parseRss(content.data.contents))
+      .then((parsedRss) => {
+        const posts = parsedRss.posts.map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
+        return posts;
+      });
+    console.log(updatedPosts);
+    return updatedPosts;
+  });
 
   const promise = Promise.all(promises);
   promise.then((posts) => {

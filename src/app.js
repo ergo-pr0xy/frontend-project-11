@@ -70,10 +70,10 @@ const updateNewPosts = (state) => {
 
     buttonElements.forEach((button) => {
       addButtonListener(button, watchedState);
-  })
-  
+    });
+  });
   setTimeout(() => updateNewPosts(watchedState), milisecondsValue);
-});
+};
 
 const validate = (url, addedUrls) => {
   yup.setLocale({

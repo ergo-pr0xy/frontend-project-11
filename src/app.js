@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import { uniqueId } from 'lodash';
 import i18n from 'i18next';
 import axios from 'axios';
-import watch, { isPostShowed } from './view.js';
+import makeWatchedState, { isPostShowed } from './view.js';
 import ru from './locales/ru.js';
 import parseRss from './parser.js';
 
@@ -134,7 +134,7 @@ const app = () => {
     },
   };
 
-  const watchedState = watch(elements, state, i18nInstance);
+  const watchedState = makeWatchedState(elements, state, i18nInstance);
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();

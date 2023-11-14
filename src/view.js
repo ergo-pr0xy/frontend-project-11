@@ -195,9 +195,9 @@ const render = (elements, state, i18n) => (path, value, prevValue) => {
   }
 };
 
-const watch = (elements, initState, i18nInstance) => {
+const makeWatchedState = (elements, initState, i18nInstance) => {
   const watchedState = onChange(initState, render(elements, initState, i18nInstance));
   return watchedState;
 };
 
-export default watch;
+export default makeWatchedState;

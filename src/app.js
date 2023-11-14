@@ -55,13 +55,12 @@ const updateNewPosts = (state) => {
     });
 
   const promise = Promise.all(promises);
-  promise
-    .then((posts) => {
-      const updatedPosts = posts.flat();
-      const addedLinks = watchedState.posts.map((addedPost) => addedPost.link);
-      const newPosts = updatedPosts.filter((updatedPost) => !addedLinks.includes(updatedPost.link));
-      watchedState.posts.unshift(...newPosts);
-    })
+  promise.then((posts) => {
+    const updatedPosts = posts.flat();
+    const addedLinks = watchedState.posts.map((addedPost) => addedPost.link);
+    const newPosts = updatedPosts.filter((updatedPost) => !addedLinks.includes(updatedPost.link));
+    watchedState.posts.unshift(...newPosts);
+  })
     .then(() => {
       const linkElements = document.querySelectorAll('.posts a');
       const buttonElements = document.querySelectorAll('.posts button');
@@ -146,7 +145,8 @@ const app = () => {
     validate(watchedState.form.fields, addedUrls)
       .then(() => {
         watchedState.form.errors = {};
-        return axios.get(normalizeLink(currentURL));
+        const response = axios.get(normalizeLink(currentURL));
+        return response;
       })
       .then((content) => parseRss(content.data.contents, watchedState))
       .then((parsedRss) => {

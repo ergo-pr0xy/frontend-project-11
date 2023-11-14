@@ -1,17 +1,18 @@
 import { has } from 'lodash';
 import onChange from 'on-change';
 
-const isPostShowed = (state, postId) => state.showedPostsIds.includes(postId);
+export const isPostShowed = (state, postId) => state.showedPostsIds.includes(postId);
 
-const renderModalElement = (elements, post) => {
+const renderModalElement = (elements, state) => {
   const { modalTitle, modalBody, readFullButton } = elements;
+  const { currentModalShowPost: post } = state;
   modalTitle.textContent = post.title;
   modalBody.textContent = post.description;
   readFullButton.setAttribute('href', post.link);
 };
 
-const renderShowedPost = (clickedLink) => {
-  const showedLink = clickedLink;
+const renderShowedPost = (state) => {
+  const { lastClickedElement: showedLink } = state;
   showedLink.classList.remove('fw-bold');
   showedLink.classList.add('fw-normal', 'link-secondary');
 };
@@ -43,14 +44,6 @@ const makeLinkElement = (state, post) => {
     linkEl.classList.add('fw-bold');
   }
 
-  linkEl.addEventListener('click', (event) => {
-    if (isPostShowed(state, linkEl.dataset.id)) {
-      return;
-    }
-    state.showedPostsIds.push(linkEl.dataset.id);
-    renderShowedPost(event.target);
-  });
-
   return linkEl;
 };
 
@@ -62,16 +55,6 @@ const makeButtonElement = (elements, state, i18nInstance, post) => {
   buttonEl.setAttribute('data-bs-toggle', 'modal');
   buttonEl.setAttribute('data-bs-target', '#modal');
   buttonEl.textContent = i18nInstance.t('buttons.view');
-
-  buttonEl.addEventListener('click', () => {
-    renderModalElement(elements, post);
-    if (isPostShowed(state, buttonEl.dataset.id)) {
-      return;
-    }
-    state.showedPostsIds.push(buttonEl.dataset.id);
-    const clickedLink = document.querySelector(`a[data-id="${buttonEl.dataset.id}"`);
-    renderShowedPost(clickedLink);
-  });
 
   return buttonEl;
 };
@@ -200,6 +183,12 @@ const render = (elements, state, i18n) => (path, value, prevValue) => {
       break;
     case 'posts':
       renderPosts(elements, state, i18n);
+      break;
+    case 'showedPostsIds':
+      renderShowedPost(state);
+      break;
+    case 'currentModalShowPost':
+      renderModalElement(elements, state);
       break;
     default:
       break;

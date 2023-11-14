@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import { uniqueId } from 'lodash';
 import i18n from 'i18next';
 import axios from 'axios';
-import watch from './view.js';
+import watch, { isPostShowed } from './view.js';
 import ru from './locales/ru.js';
 import parseRss from './parser.js';
 
@@ -11,6 +11,32 @@ const milisecondsValue = 5000;
 const normalizeLink = (link) => {
   const proxyLink = 'https://allorigins.hexlet.app/get?disableCache=true&url=';
   return `${proxyLink}${link}`;
+};
+
+const addLinkListener = (linkEl, state) => {
+  const watchedState = state;
+  linkEl.addEventListener('click', (event) => {
+    const postId = event.target.dataset.id;
+    if (isPostShowed(watchedState, postId)) {
+      return;
+    }
+    watchedState.lastClickedElement = event.target;
+    watchedState.showedPostsIds.push(postId);
+  });
+};
+
+const addButtonListener = (buttonEl, state) => {
+  const watchedState = state;
+  buttonEl.addEventListener('click', (event) => {
+    const postId = event.target.dataset.id;
+    if (isPostShowed(watchedState, postId)) {
+      return;
+    }
+    watchedState.lastClickedElement = document.querySelector(`a[data-id="${postId}"]`);
+    const modalShowPost = watchedState.posts.find((post) => post.id === buttonEl.dataset.id);
+    watchedState.currentModalShowPost = modalShowPost;
+    watchedState.showedPostsIds.push(postId);
+  });
 };
 
 const updateNewPosts = (state) => {
@@ -29,12 +55,25 @@ const updateNewPosts = (state) => {
     });
 
   const promise = Promise.all(promises);
-  promise.then((posts) => {
-    const updatedPosts = posts.flat();
-    const addedLinks = watchedState.posts.map((addedPost) => addedPost.link);
-    const newPosts = updatedPosts.filter((updatedPost) => !addedLinks.includes(updatedPost.link));
-    watchedState.posts.unshift(...newPosts);
-  });
+  promise
+    .then((posts) => {
+      const updatedPosts = posts.flat();
+      const addedLinks = watchedState.posts.map((addedPost) => addedPost.link);
+      const newPosts = updatedPosts.filter((updatedPost) => !addedLinks.includes(updatedPost.link));
+      watchedState.posts.unshift(...newPosts);
+    })
+    .then(() => {
+      const linkElements = document.querySelectorAll('.posts a');
+      const buttonElements = document.querySelectorAll('.posts button');
+
+      linkElements.forEach((link) => {
+        addLinkListener(link, watchedState);
+      });
+
+      buttonElements.forEach((button) => {
+        addButtonListener(button, watchedState);
+      });
+    });
   setTimeout(() => updateNewPosts(watchedState), milisecondsValue);
 };
 
@@ -83,6 +122,8 @@ const app = () => {
     feeds: [],
     posts: [],
     showedPostsIds: [],
+    lastClickedElement: null,
+    currentModalShowPost: null,
     form: {
       fields: {
         url: null,
@@ -119,6 +160,18 @@ const app = () => {
         watchedState.form.hasErrors = false;
         watchedState.feeds.unshift(feed);
         watchedState.posts.unshift(...posts);
+      })
+      .then(() => {
+        const linkElements = document.querySelectorAll('.posts a');
+        const buttonElements = document.querySelectorAll('.posts button');
+
+        linkElements.forEach((link) => {
+          addLinkListener(link, watchedState);
+        });
+
+        buttonElements.forEach((button) => {
+          addButtonListener(button, watchedState);
+        });
       })
       .catch((error) => {
         if (error.name === 'ValidationError') {

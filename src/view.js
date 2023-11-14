@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import onChange from 'on-change';
 
 export const isPostShowed = (state, postId) => state.showedPostsIds.includes(postId);

@@ -1,4 +1,4 @@
-import { has } from 'lodash';
+import { isEmpty } from 'lodash';
 import onChange from 'on-change';
 
 export const isPostShowed = (state, postId) => state.showedPostsIds.includes(postId);
@@ -147,36 +147,27 @@ const renderFeedback = (elements, state, i18n) => {
   feedbackElement.textContent = i18n.t(messagePath);
 };
 
-const renderErrors = (elements, state, errors, prevErrors, i18n) => {
-  Object.entries(elements.fields).forEach(([fieldName, fieldElement]) => {
-    const fieldHasError = has(errors, fieldName);
-    const fieldHadError = has(prevErrors, fieldName);
+const renderErrors = (elements, state, i18n) => {
+  const { fields: { url: fieldElement } } = elements;
 
-    if (!fieldHadError && !fieldHasError) {
-      fieldElement.classList.remove('is-invalid');
-      renderFeedback(elements, state, i18n);
-      elements.form.reset();
-      elements.fields.url.focus();
-      return;
-    }
+  const fieldHasError = state.form.hasErrors;
 
-    if (fieldHadError && !fieldHasError) {
-      fieldElement.classList.remove('is-invalid');
-      renderFeedback(elements, state, i18n);
-      return;
-    }
+  if (!fieldHasError) {
+    fieldElement.classList.remove('is-invalid');
+    renderFeedback(elements, state, i18n);
+    elements.form.reset();
+    elements.fields.url.focus();
+    return;
+  }
 
-    if ((!fieldHadError && fieldHasError) || (fieldHadError && fieldHasError)) {
-      fieldElement.classList.add('is-invalid');
-      renderFeedback(elements, state, i18n);
-    }
-  });
+  fieldElement.classList.add('is-invalid');
+  renderFeedback(elements, state, i18n);
 };
 
-const render = (elements, state, i18n) => (path, value, prevValue) => {
+const render = (elements, state, i18n) => (path) => {
   switch (path) {
     case 'form.hasErrors':
-      renderErrors(elements, state, value, prevValue, i18n);
+      renderErrors(elements, state, i18n);
       break;
     case 'feeds':
       renderFeeds(elements, state, i18n);

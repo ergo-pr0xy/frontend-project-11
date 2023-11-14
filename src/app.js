@@ -47,7 +47,6 @@ const updateNewPosts = (watchedState) => {
         const posts = parsedRss.posts.map((post) => ({ ...post, feedId: feed.id, id: uniqueId() }));
         return posts;
       });
-    console.log(updatedPosts);
     return updatedPosts;
   });
 

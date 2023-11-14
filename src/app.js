@@ -142,11 +142,11 @@ const app = () => {
     const currentURL = formData.get('url');
     watchedState.form.fields.url = currentURL;
     const addedUrls = watchedState.feeds.map((feed) => feed.url);
+
     validate(watchedState.form.fields, addedUrls)
       .then(() => {
         watchedState.form.errors = {};
-        const response = axios.get(normalizeLink(currentURL));
-        return response;
+        return axios.get(normalizeLink(currentURL));
       })
       .then((content) => parseRss(content.data.contents, watchedState))
       .then((parsedRss) => {

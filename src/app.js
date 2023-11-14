@@ -60,21 +60,20 @@ const updateNewPosts = (state) => {
     const addedLinks = watchedState.posts.map((addedPost) => addedPost.link);
     const newPosts = updatedPosts.filter((updatedPost) => !addedLinks.includes(updatedPost.link));
     watchedState.posts.unshift(...newPosts);
-  })
-    .then(() => {
-      const linkElements = document.querySelectorAll('.posts a');
-      const buttonElements = document.querySelectorAll('.posts button');
 
-      linkElements.forEach((link) => {
-        addLinkListener(link, watchedState);
-      });
+    const linkElements = document.querySelectorAll('.posts a');
+    const buttonElements = document.querySelectorAll('.posts button');
 
-      buttonElements.forEach((button) => {
-        addButtonListener(button, watchedState);
-      });
+    linkElements.forEach((link) => {
+      addLinkListener(link, watchedState);
     });
+
+    buttonElements.forEach((button) => {
+      addButtonListener(button, watchedState);
+  })
+  
   setTimeout(() => updateNewPosts(watchedState), milisecondsValue);
-};
+});
 
 const validate = (url, addedUrls) => {
   yup.setLocale({

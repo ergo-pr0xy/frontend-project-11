@@ -16,19 +16,6 @@ const renderShowedPost = (state) => {
   showedLink.classList.add('fw-normal', 'link-secondary');
 };
 
-const makePostElement = () => {
-  const postEl = document.createElement('li');
-  postEl.classList.add(
-    'list-group-item',
-    'd-flex',
-    'justify-content-between',
-    'align-items-start',
-    'border-0',
-    'border-end-0',
-  );
-  return postEl;
-};
-
 const makeLinkElement = (state, post) => {
   const linkEl = document.createElement('a');
   linkEl.setAttribute('href', post.link);
@@ -46,7 +33,7 @@ const makeLinkElement = (state, post) => {
   return linkEl;
 };
 
-const makeButtonElement = (elements, state, i18nInstance, post) => {
+const makeButtonElement = (i18nInstance, post) => {
   const buttonEl = document.createElement('button');
   buttonEl.setAttribute('type', 'button');
   buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
@@ -58,17 +45,20 @@ const makeButtonElement = (elements, state, i18nInstance, post) => {
   return buttonEl;
 };
 
-const makeFeedElement = (feed) => {
-  const feedEl = document.createElement('li');
-  feedEl.classList.add('list-group-item', 'border-0', 'border-end-0');
-  const feedTitle = document.createElement('h3');
-  feedTitle.classList.add('h6', 'm-0');
-  feedTitle.textContent = feed.title;
-  const feedDescription = document.createElement('p');
-  feedDescription.classList.add('m-0', 'small', 'text-black-50');
-  feedDescription.textContent = feed.description;
-  feedEl.append(feedTitle, feedDescription);
-  return feedEl;
+const makePostElement = (state, post, i18n) => {
+  const postEl = document.createElement('li');
+  postEl.classList.add(
+    'list-group-item',
+    'd-flex',
+    'justify-content-between',
+    'align-items-start',
+    'border-0',
+    'border-end-0',
+  );
+  const linkEl = makeLinkElement(state, post);
+  const buttonEl = makeButtonElement(i18n, post);
+  postEl.append(linkEl, buttonEl);
+  return postEl;
 };
 
 const makeCardSample = (i18nInstance) => {
@@ -100,10 +90,7 @@ const renderPosts = (elements, state, i18n) => {
 
   const posts = state.posts
     .map((post) => {
-      const postEl = makePostElement();
-      const link = makeLinkElement(state, post);
-      const button = makeButtonElement(elements, state, i18n, post);
-      postEl.append(link, button);
+      const postEl = makePostElement(state, post, i18n);
       return postEl;
     });
 
@@ -121,7 +108,18 @@ const renderFeeds = (elements, state, i18n) => {
   feedsList.classList.add('list-group', 'border-0', 'rounded-0');
 
   const feeds = state.feeds.map((feed) => {
-    const feedEl = makeFeedElement(feed);
+    const feedEl = document.createElement('li');
+    feedEl.classList.add('list-group-item', 'border-0', 'border-end-0');
+
+    const feedTitle = document.createElement('h3');
+    feedTitle.classList.add('h6', 'm-0');
+    feedTitle.textContent = feed.title;
+
+    const feedDescription = document.createElement('p');
+    feedDescription.classList.add('m-0', 'small', 'text-black-50');
+    feedDescription.textContent = feed.description;
+
+    feedEl.append(feedTitle, feedDescription);
     return feedEl;
   });
 

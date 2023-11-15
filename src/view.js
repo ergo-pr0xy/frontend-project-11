@@ -61,7 +61,7 @@ const makePostElement = (state, post, i18n) => {
   return postEl;
 };
 
-const makeCardSample = (i18nInstance) => {
+const makeCardSample = (i18nInstance, cardName) => {
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
 
@@ -70,7 +70,7 @@ const makeCardSample = (i18nInstance) => {
 
   const cardTitle = document.createElement('h2');
   cardTitle.classList.add('card-title', 'h4');
-  cardTitle.textContent = i18nInstance.t('posts');
+  cardTitle.textContent = i18nInstance.t(cardName);
 
   cardBody.append(cardTitle);
   card.append(cardBody);
@@ -95,7 +95,7 @@ const renderPosts = (elements, state, i18n) => {
     });
 
   postsList.append(...posts);
-  const card = makeCardSample(i18n);
+  const card = makeCardSample(i18n, 'posts');
   card.append(postsList);
   postElements.append(card);
 };
@@ -124,7 +124,7 @@ const renderFeeds = (elements, state, i18n) => {
   });
 
   feedsList.append(...feeds);
-  const card = makeCardSample(i18n);
+  const card = makeCardSample(i18n, 'feeds');
   card.append(feedsList);
   feedElements.append(card);
 };

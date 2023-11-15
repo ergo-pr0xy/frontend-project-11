@@ -139,7 +139,6 @@ const app = () => {
 
     validate(watchedState.form.fields, addedUrls)
       .then(() => {
-        watchedState.form.errors = {};
         const response = axios.get(normalizeLink(currentURL));
         return response;
       })

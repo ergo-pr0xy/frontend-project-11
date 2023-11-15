@@ -14,8 +14,21 @@
 * Every added link is being validated. If the link is incorrect or already added the validation error message will be displayed.
 * [Vercel link](https://frontend-project-11-mu-three.vercel.app/) of the RSS-Reader
 
+## Develop
+
+To develop your own RSS-Reader:
+
+
 ## Screenshots
 
+Enter RSS-Feed URL.
 
+![Start page](https://github.com/ergo-pr0xy/projects-support-stuff/blob/main/img/1.png)
 
+If URL is invalid the error message will be displayed.
 
+![Start page](https://github.com/ergo-pr0xy/projects-support-stuff/blob/main/img/3.png)
+
+If URL is correct the RSS Feed will be added and displayed!
+
+![Start page](https://github.com/ergo-pr0xy/projects-support-stuff/blob/main/img/2.png)

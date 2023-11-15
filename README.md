@@ -18,6 +18,15 @@
 
 To develop your own RSS-Reader:
 
+Clone the repository
+```bash
+git clone
+```
+
+Install and update all dependencies
+```bash
+make install
+```
 
 ## Screenshots
 
@@ -27,8 +36,8 @@ Enter RSS-Feed URL.
 
 If URL is invalid the error message will be displayed.
 
-![Start page](https://github.com/ergo-pr0xy/projects-support-stuff/blob/main/img/3.png)
+![Start page](https://github.com/ergo-pr0xy/projects-support-stuff/blob/main/img/2.png)
 
 If URL is correct the RSS Feed will be added and displayed!
 
-![Start page](https://github.com/ergo-pr0xy/projects-support-stuff/blob/main/img/2.png)
+![Start page](https://github.com/ergo-pr0xy/projects-support-stuff/blob/main/img/3.png)

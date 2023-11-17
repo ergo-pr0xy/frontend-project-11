@@ -119,6 +119,7 @@ const app = () => {
     lastClickedElement: null,
     currentModalShowPost: null,
     form: {
+      status: null,
       fields: {
         url: null,
       },
@@ -132,6 +133,7 @@ const app = () => {
 
   elements.form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    watchedState.form.status = 'sending';
     const formData = new FormData(e.target);
     const currentURL = formData.get('url');
     watchedState.form.fields.url = currentURL;
@@ -154,6 +156,7 @@ const app = () => {
         watchedState.form.hasErrors = false;
         watchedState.feeds.unshift(feed);
         watchedState.posts.unshift(...posts);
+        watchedState.form.status = 'waiting';
       })
       .then(() => {
         const linkElements = document.querySelectorAll('.posts a');
@@ -175,7 +178,7 @@ const app = () => {
         if (error.name === 'AxiosError') {
           watchedState.form.messageKey = 'networkError';
         }
-
+        watchedState.form.status = 'waiting';
         watchedState.form.hasErrors = true;
         console.log(error);
       });

@@ -2,6 +2,18 @@ import onChange from 'on-change';
 
 export const isPostShowed = (state, postId) => state.showedPostsIds.includes(postId);
 
+const handleButtonView = (state, elements) => {
+  const { submitButton } = elements;
+
+  if (state.form.status === 'sending') {
+    submitButton.disabled = true;
+  }
+
+  if (state.form.status === 'waiting') {
+    submitButton.disabled = false;
+  }
+};
+
 const renderModalElement = (elements, state) => {
   const { modalTitle, modalBody, readFullButton } = elements;
   const { currentModalShowPost: post } = state;
@@ -177,6 +189,9 @@ const render = (elements, state, i18n) => (path) => {
       break;
     case 'currentModalShowPost':
       renderModalElement(elements, state);
+      break;
+    case 'form.status':
+      handleButtonView(state, elements);
       break;
     default:
       break;
